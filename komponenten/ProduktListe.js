@@ -22,7 +22,7 @@ export default function ProduktListe() {
                     <Card.Text>
                         {produkt.beschreibung}
                     </Card.Text>
-                    <Button variant="danger">to the Basket</Button>
+                    <Button variant="danger">add to the Basket</Button>
                  </Card.Body>
               </Card>
             </div>
