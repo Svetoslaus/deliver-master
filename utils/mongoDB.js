@@ -8,7 +8,7 @@ if(!cached){
 }
 
 async function dbConnect () {
-    if(cached){
+    if(cached.con){
       console.log('DB Verbindung aktiv')
       return cached.con
     }
@@ -35,4 +35,4 @@ async function dbDisconnect(){
 }
 
 const mongoDB = {dbConnect, dbDisconnect}
-export default mongoDB
+export default mongoDB;
