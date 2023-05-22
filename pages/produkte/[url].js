@@ -6,6 +6,9 @@ import { Button, ListGroup, ListGroupItem } from 'react-bootstrap'
 import mongoDB from '@/utils/mongoDB'
 import Produkt from '@/models/Produkt'
 import { useState } from 'react'
+import { useDispatch } from 'react-redux'
+import { addProdukte } from '@/redux/warenkorb'
+
 
 export default function ProduktSeite({produkt}) {
     // const router = useRouter();
@@ -15,6 +18,7 @@ export default function ProduktSeite({produkt}) {
     const [preis, setPreis] = useState(produkt.preis);
     const [extras, setExtras] = useState([]);
     const [menge, setMenge] = useState(1);
+    const dispatch = useDispatch();
     
     const addExtra = (e, extra) => {
       const checked = e.target.checked;
@@ -27,7 +31,9 @@ export default function ProduktSeite({produkt}) {
       }
     }
 
-   
+    const toTheBasket = () => {
+      dispatch(addProdukte({...produkt, extras, preis, menge}))
+    }
 
 
     if(!produkt){
@@ -84,7 +90,7 @@ export default function ProduktSeite({produkt}) {
               </ListGroupItem>
               <ListGroupItem>
                 <div className='row shadow'>
-                    <Button variant='danger'> to the Basket</Button>
+                    <Button variant='danger' onClick={toTheBasket}> to the Basket</Button>
                 </div>
               </ListGroupItem>
             </ListGroup>

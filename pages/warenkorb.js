@@ -1,7 +1,10 @@
 import {Table, CloseButton, Button, Card} from 'react-bootstrap'
 import Image from 'react-bootstrap'
+import { useDispatch, useSelector } from 'react-redux'
 
 export default function Warenkorb() {
+  // const dispatch = useDispatch()
+  // const warenkorb = useSelector((state) => state.warenkorb)
     return (
       <div>
         <h1>Warenkorb</h1>
