@@ -3,11 +3,32 @@ import jsondb from '@/jsondb/produkte'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Button, ListGroup, ListGroupItem } from 'react-bootstrap'
+import mongoDB from '@/utils/mongoDB'
+import Produkt from '@/models/Produkt'
+import { useState } from 'react'
 
-export default function ProduktSeite() {
-    const router = useRouter();
-    const {url} = router.query;
-    const produkt = jsondb.produkte.find((a) => a.url === url);
+export default function ProduktSeite({produkt}) {
+    // const router = useRouter();
+    // const {url} = router.query;
+    // const produkt = jsondb.produkte.find((a) => a.url === url);
+
+    const [preis, setPreis] = useState(produkt.preis);
+    const [extras, setExtras] = useState([]);
+    const [menge, setMenge] = useState(1);
+    
+    const addExtra = (e, extra) => {
+      const checked = e.target.checked;
+      if(checked){
+        setPreis(preis + extra.preis)
+        setExtras([...extras, extra])
+      } else {
+        setPreis(preis - extra.preis)
+        setExtras(extras.filter((alleExtras) => alleExtras._id !== extra._id))
+      }
+    }
+
+   
+
 
     if(!produkt){
         return (
@@ -39,20 +60,27 @@ export default function ProduktSeite() {
             </h1>
             <ListGroup variant='flush'>
               <ListGroupItem>
-                <h2 className='text-danger'>{produkt.preis} €</h2>
+                <h2 className='text-danger'>{preis.toFixed(2)} €</h2>
               </ListGroupItem>
               <ListGroupItem>
                 {produkt.beschreibung}
               </ListGroupItem>
               <ListGroupItem>
-                Extras:
-                doppelt <input className='form-check-input me-2' type='checkbox'
+                {produkt.extras.length ? "Extras: " : <p></p>}
+                {produkt.extras.map((extra)=>(
+                  <span key={extra.text}>
+                    {extra.text} <input className='form-check-input me-2' type='checkbox'
+                    id={extra.text}
+                    onChange={(e) => addExtra(e, extra)}
                 />
-                extra Pommes <input className='form-check-input me-2' type='checkbox'
-                />
+                  </span>
+                ))}
               </ListGroupItem>
               <ListGroupItem>
-                <input className='form-control w-50' type='number' placeholder='1' min='1' max='50'></input>
+                <input className='form-control w-50' 
+                type='number' value={menge} placeholder='1' min='1' max='50'
+                onChange={(e) => setMenge(e.target.value)}>
+                </input>
               </ListGroupItem>
               <ListGroupItem>
                 <div className='row shadow'>
@@ -64,4 +92,16 @@ export default function ProduktSeite() {
         </div>
         </div>
     )
+}
+
+
+export async function getServerSideProps(context){
+  const url = context.params.url;
+  await mongoDB.dbConnect();
+  const produkt = await Produkt.findOne({url}).lean();
+  return {
+    props: {
+      produkt:JSON.parse(JSON.stringify(produkt))
+    }
+  }
 }
