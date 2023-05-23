@@ -8,10 +8,10 @@ import Produkt from '@/models/Produkt'
 import { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { addProdukte } from '@/redux/warenkorb'
-
+import { v4 as uuidv4 } from 'uuid';
 
 export default function ProduktSeite({produkt}) {
-    // const router = useRouter();
+     const router = useRouter();
     // const {url} = router.query;
     // const produkt = jsondb.produkte.find((a) => a.url === url);
 
@@ -32,7 +32,9 @@ export default function ProduktSeite({produkt}) {
     }
 
     const toTheBasket = () => {
-      dispatch(addProdukte({...produkt, extras, preis, menge}))
+      const _id = uuidv4();
+      dispatch(addProdukte({...produkt, extras, preis, menge, _id}))
+      router.push('/warenkorb');
     }
 
 
