@@ -1,12 +1,26 @@
 import {Table, CloseButton, Button, Card} from 'react-bootstrap'
 import Image from 'react-bootstrap'
 import { useDispatch, useSelector } from 'react-redux'
+import Link from 'next/link'
+import { deleteProdukt } from '@/redux/warenkorb'
 
 export default function Warenkorb() {
-  // const dispatch = useDispatch()
-  // const warenkorb = useSelector((state) => state.warenkorb)
+  const dispatch = useDispatch()
+  const warenkorb = useSelector((state) => state.warenkorb)
+
+  const entfernen = (produkt) => {
+    dispatch(deleteProdukt(produkt))
+
+  }
+
     return (
       <div>
+        {warenkorb.warenAnzahl === 0 ? (
+          <h2>The Basket is empty!</h2>
+        ) : (
+
+    
+        <div>
         <h1>Warenkorb</h1>
         <div className='row mt-4'>
           <div className='col-9'>
@@ -22,26 +36,25 @@ export default function Warenkorb() {
                 </tr>
               </thead>
               <tbody>
-                <tr>
+                {warenkorb.produkte.map((produkt) => (
+                <tr key={produkt._id}>
                   <td>
-                    <img src={'/bilder/produkte/drinks.jpg'} alt='drinks' width={50} height={50}/>
+                    <img src={produkt.bild} alt={produkt.name} width={50} height={50}/>
                   </td>
-                  <td>Soft Drinks</td>
-                  <td>doppelt</td>
-                  <td>1</td>
-                  <td>1.99</td>
-                  <td><Button className='btn-sm'>X</Button></td> 
-                </tr>
-                <tr>
                   <td>
-                    <img src={'/bilder/produkte/pizza.jpg'} alt='pizza' width={50} height={50}/>
+                    <Link href={`/produkte/${produkt.url}`}>
+                      <div className='text-danger'>{produkt.name}</div>
+                    </Link>
                   </td>
-                  <td>Pizza</td>
-                  <td>doppelt</td>
-                  <td>1</td>
-                  <td>4.99</td>
-                  <td><Button className='btn-sm'>X</Button></td> 
+                  <td>{produkt.extras.map(extra => (
+                    <span key={extra._id}>{extra.text}</span>
+                  ))}
+                  </td>
+                  <td>{produkt.menge}</td>
+                  <td>{(produkt.preis*produkt.menge).toFixed(2)}</td>
+                  <td><Button className='btn-sm' onClick={() => entfernen(produkt)}>X</Button></td> 
                 </tr>
+                ))}
               </tbody> 
             </Table>
           </div>
@@ -50,13 +63,18 @@ export default function Warenkorb() {
             <Card.Header as="h5">Gesamt</Card.Header>
             <Card.Body className='text-center'>
             <Card.Title>
-              7.25€
+              {warenkorb.gesamtbetrag.toFixed(2)}
             </Card.Title>
             <Button variant='primary'>Zur Kase</Button> 
             </Card.Body>
             </Card>
           </div>
         </div>
+
+
+      </div>
+        )}
+
       </div>
     )
   }
